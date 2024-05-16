@@ -3,7 +3,7 @@ const json5 = require("json5");
 const HtmlWebpackPlugin = require("html-webpack-plugin");
 
 module.exports = {
-  module: "development",
+  mode: "development",
   entry: "./src/index.js",
   output: {
     filename: "bundle.js",
