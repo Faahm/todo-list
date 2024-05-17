@@ -1,4 +1,5 @@
 import "./style.css";
+import modal from "./modules/modal";
 
 const projectsContainer = document.querySelector("[data-projects]");
 const newProjectForm = document.querySelector("[data-new-project-form]");
@@ -19,72 +20,27 @@ const newTodoDescription = document.querySelector(
 );
 const newTodoDueDate = document.querySelector("[data-new-todo-due]");
 const newTodoPriority = document.querySelector("[data-new-todo-priority]");
-const clearCompleteTasksButton = document.querySelector(
+const clearCompleteTodosButton = document.querySelector(
   "[data-clear-complete-tasks-button]"
 );
 
-// const modal = document.querySelector(".modal");
-// const overlay = document.querySelector(".overlay");
-// const openModalBtn = document.querySelector(".btn-open");
-// const closeModalBtn = document.querySelector(".btn-close");
-
-// function closeModal() {
-//   modal.classList.add("hidden");
-//   overlay.classList.add("hidden");
-// }
-
-// closeModalBtn.addEventListener("click", closeModal);
-// overlay.addEventListener("click", closeModal);
-
-// document.addEventListener("keydown", function (e) {
-//   if (e.key === "Escape" && !modal.classList.contains("hidden")) {
-//     closeModal();
-//   }
-// });
-
-// openModalBtn.addEventListener("click", openModal);
-
-// function openModal() {
-//   modal.classList.remove("hidden");
-//   overlay.classList.remove("hidden");
-// }
-
-const overlay = document.querySelector(".overlay");
-
-function openModal(modalType) {
-  const modal = document.querySelector(`[data-modal="${modalType}"]`);
-  modal.classList.remove("hidden");
-  overlay.classList.remove("hidden");
-}
-
-function closeModal(modalType) {
-  const modal = document.querySelector(`[data-modal="${modalType}"]`);
-  modal.classList.add("hidden");
-  overlay.classList.add("hidden");
-}
+// modal functions
+modal.setupOverlayListener();
+modal.setupEscapeListener();
 
 document.addEventListener("click", (e) => {
   if (e.target.matches("[data-modal-open]")) {
     const modalType = e.target.getAttribute("data-modal-open");
-    openModal(modalType);
+    modal.openModal(modalType);
   }
 });
 
 document.addEventListener("click", (e) => {
   if (e.target.matches("[data-modal-close]")) {
     const modalType = e.target.getAttribute("data-modal-close");
-    closeModal(modalType);
+    modal.closeModal(modalType);
   }
   if (e.target.matches(".overlay")) {
-    document
-      .querySelectorAll(".modal")
-      .forEach((modal) => modal.classList.add("hidden"));
-    overlay.classList.add("hidden");
-  }
-});
-
-document.addEventListener("keydown", (e) => {
-  if (e.key === "Escape") {
     document
       .querySelectorAll(".modal")
       .forEach((modal) => modal.classList.add("hidden"));
@@ -107,7 +63,9 @@ projectsContainer.addEventListener("click", (e) => {
   }
 });
 
-todosContainer.addEventListener("click", (e) => {
+todosContainer.addEventListener("click", handleTodoItemCheck);
+
+function handleTodoItemCheck(e) {
   if (e.target.tagName.toLowerCase() === "input") {
     const selectedProject = projects.find(
       (project) => project.id === selectedProjectId
@@ -118,15 +76,19 @@ todosContainer.addEventListener("click", (e) => {
     selectedTask.complete = e.target.checked;
     save();
   }
-});
+}
 
-deleteProjectButton.addEventListener("click", (e) => {
+deleteProjectButton.addEventListener("click", handleDeleteProject);
+
+function handleDeleteProject() {
   projects = projects.filter((project) => project.id !== selectedProjectId);
   selectedProjectId = null;
   saveAndRender();
-});
+}
 
-clearCompleteTasksButton.addEventListener("click", (e) => {
+clearCompleteTodosButton.addEventListener("click", handleClearCompleteTodos);
+
+function handleClearCompleteTodos() {
   const selectedProject = projects.find(
     (project) => project.id === selectedProjectId
   );
@@ -134,9 +96,11 @@ clearCompleteTasksButton.addEventListener("click", (e) => {
     (task) => !task.complete
   );
   saveAndRender();
-});
+}
 
-newProjectForm.addEventListener("submit", (e) => {
+newProjectForm.addEventListener("submit", handleNewProjectSubmit);
+
+function handleNewProjectSubmit(e) {
   e.preventDefault();
   const projectName = newProjectInput.value;
   if (projectName == null || projectName === "") return;
@@ -145,7 +109,7 @@ newProjectForm.addEventListener("submit", (e) => {
   projects.push(project);
   selectedProjectId = project.id;
   saveAndRender();
-});
+}
 
 newTodoForm.addEventListener("submit", handleNewTodoSubmit);
 
@@ -158,7 +122,7 @@ function handleNewTodoSubmit(e) {
 
   if (todoTitle == null || todoTitle === "") return;
 
-  const task = createTask(
+  const task = createTodo(
     todoTitle,
     todoDescription,
     todoDueDate,
@@ -185,7 +149,7 @@ function createProject(title) {
   };
 }
 
-function createTask(title, description, dueDate, priority) {
+function createTodo(title, description, dueDate, priority) {
   return {
     id: Date.now().toString(),
     title: title,
