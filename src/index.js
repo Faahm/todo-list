@@ -1,92 +1,158 @@
 import "./style.css";
 
-const listsContainer = document.querySelector("[data-lists]");
-const newListForm = document.querySelector("[data-new-list-form]");
-const newListInput = document.querySelector("[data-new-list-input]");
-const deleteListButton = document.querySelector("[data-delete-list-button]");
-const listDisplayContainer = document.querySelector(
-  "[data-list-display-container]"
+const projectsContainer = document.querySelector("[data-projects]");
+const newProjectForm = document.querySelector("[data-new-project-form]");
+const newProjectInput = document.querySelector("[data-new-project-input]");
+const deleteProjectButton = document.querySelector(
+  "[data-delete-project-button]"
 );
-const listTitleElement = document.querySelector("[data-list-title]");
-const listCountElement = document.querySelector("[data-list-count]");
-const tasksContainer = document.querySelector("[data-tasks]");
-const taskTemplate = document.getElementById("task-template");
-const newTaskForm = document.querySelector("[data-new-task-form]");
-const newTaskInput = document.querySelector("[data-new-task-input]");
+const projectDisplayContainer = document.querySelector(
+  "[data-project-display-container]"
+);
+const projectTitleElement = document.querySelector("[data-project-title]");
+const todosContainer = document.querySelector("[data-tasks]");
+const todoTemplate = document.getElementById("todo-template");
+const newTodoForm = document.querySelector("[data-new-todo-form]");
+const newTodoTitle = document.querySelector("[data-new-todo-title]");
+const newTodoDescription = document.querySelector(
+  "[data-new-todo-description]"
+);
+const newTodoDueDate = document.querySelector("[data-new-todo-due]");
+const newTodoPriority = document.querySelector("[data-new-todo-priority]");
 const clearCompleteTasksButton = document.querySelector(
   "[data-clear-complete-tasks-button]"
 );
 
-// task. is added to avoid any collisions/conflicts with the system files and websites
-const LOCAL_STORAGE_LIST_KEY = "task.lists";
-const LOCAL_STORAGE_SELECTED_LIST_ID_KEY = "task.selectedListId";
-let lists = JSON.parse(localStorage.getItem(LOCAL_STORAGE_LIST_KEY)) || [];
-let selectedListId = localStorage.getItem(LOCAL_STORAGE_SELECTED_LIST_ID_KEY);
+const modal = document.querySelector(".modal");
+const overlay = document.querySelector(".overlay");
+const openModalBtn = document.querySelector(".btn-open");
+const closeModalBtn = document.querySelector(".btn-close");
 
-listsContainer.addEventListener("click", (e) => {
+// close modal function
+function closeModal() {
+  modal.classList.add("hidden");
+  overlay.classList.add("hidden");
+}
+
+// close the modal when the close button and overlay is clicked
+closeModalBtn.addEventListener("click", closeModal);
+overlay.addEventListener("click", closeModal);
+
+// close modal when the Esc key is pressed
+document.addEventListener("keydown", function (e) {
+  if (e.key === "Escape" && !modal.classList.contains("hidden")) {
+    closeModal();
+  }
+});
+
+// open modal function
+const openModal = function () {
+  modal.classList.remove("hidden");
+  overlay.classList.remove("hidden");
+};
+// open modal event
+openModalBtn.addEventListener("click", openModal);
+
+// task. is added to avoid any collisions/conflicts with the system files and websites
+const LOCAL_STORAGE_LIST_KEY = "task.projects";
+const LOCAL_STORAGE_SELECTED_LIST_ID_KEY = "task.selectedProjectId";
+let projects = JSON.parse(localStorage.getItem(LOCAL_STORAGE_LIST_KEY)) || [];
+let selectedProjectId = localStorage.getItem(
+  LOCAL_STORAGE_SELECTED_LIST_ID_KEY
+);
+
+projectsContainer.addEventListener("click", (e) => {
   if (e.target.tagName.toLowerCase() === "li") {
-    selectedListId = e.target.dataset.listId;
+    selectedProjectId = e.target.dataset.projectId;
     saveAndRender();
   }
 });
 
-tasksContainer.addEventListener("click", (e) => {
+todosContainer.addEventListener("click", (e) => {
   if (e.target.tagName.toLowerCase() === "input") {
-    const selectedList = lists.find((list) => list.id === selectedListId);
-    const selectedTask = selectedList.tasks.find(
+    const selectedProject = projects.find(
+      (project) => project.id === selectedProjectId
+    );
+    const selectedTask = selectedProject.todos.find(
       (task) => task.id === e.target.id
     );
     selectedTask.complete = e.target.checked;
     save();
-    renderTaskCount(selectedList);
   }
 });
 
-deleteListButton.addEventListener("click", (e) => {
-  lists = lists.filter((list) => list.id !== selectedListId);
-  selectedListId = null;
+deleteProjectButton.addEventListener("click", (e) => {
+  projects = projects.filter((project) => project.id !== selectedProjectId);
+  selectedProjectId = null;
   saveAndRender();
 });
 
 clearCompleteTasksButton.addEventListener("click", (e) => {
-  const selectedList = lists.find((list) => list.id === selectedListId);
-  selectedList.tasks = selectedList.tasks.filter((task) => !task.complete);
+  const selectedProject = projects.find(
+    (project) => project.id === selectedProjectId
+  );
+  selectedProject.todos = selectedProject.todos.filter(
+    (task) => !task.complete
+  );
   saveAndRender();
 });
 
-newListForm.addEventListener("submit", (e) => {
+newProjectForm.addEventListener("submit", (e) => {
   e.preventDefault();
-  const listName = newListInput.value;
-  if (listName == null || listName === "") return;
-  const list = createList(listName);
-  newListInput.value = null;
-  lists.push(list);
+  const projectName = newProjectInput.value;
+  if (projectName == null || projectName === "") return;
+  const project = createProject(projectName);
+  newProjectInput.value = null;
+  projects.push(project);
+  selectedProjectId = project.id;
   saveAndRender();
 });
 
-newTaskForm.addEventListener("submit", (e) => {
+newTodoForm.addEventListener("submit", handleNewTodoSubmit);
+
+function handleNewTodoSubmit(e) {
   e.preventDefault();
-  const taskName = newTaskInput.value;
-  if (taskName == null || taskName === "") return;
-  const task = createTask(taskName);
-  newTaskInput.value = null;
-  const selectedList = lists.find((list) => list.id === selectedListId);
-  selectedList.tasks.push(task);
-  saveAndRender();
-});
+  const todoTitle = newTodoTitle.value;
+  const todoDescription = newTodoDescription.value;
+  const todoDueDate = newTodoDueDate.value;
+  const todoPriority = newTodoPriority.value;
 
-function createList(name) {
+  if (todoTitle == null || todoTitle === "") return;
+
+  const task = createTask(
+    todoTitle,
+    todoDescription,
+    todoDueDate,
+    todoPriority
+  );
+  newTodoTitle.value = null;
+  newTodoDescription.value = null;
+  newTodoDueDate.value = null;
+  newTodoPriority.value = null;
+  const selectedProject = projects.find(
+    (project) => project.id === selectedProjectId
+  );
+  selectedProject.todos.push(task);
+  saveAndRender();
+  closeModal();
+  console.log(projects);
+}
+
+function createProject(title) {
   return {
     id: Date.now().toString(),
-    name: name,
-    tasks: [],
+    title: title,
+    todos: [],
   };
 }
 
-function createTask(name) {
+function createTask(title, description, dueDate, priority) {
   return {
     id: Date.now().toString(),
-    name: name,
+    title: title,
+    description: description,
+    dueDate: dueDate,
+    priority: priority,
     complete: false,
   };
 }
@@ -97,55 +163,55 @@ function saveAndRender() {
 }
 
 function save() {
-  localStorage.setItem(LOCAL_STORAGE_LIST_KEY, JSON.stringify(lists));
-  localStorage.setItem(LOCAL_STORAGE_SELECTED_LIST_ID_KEY, selectedListId);
+  localStorage.setItem(LOCAL_STORAGE_LIST_KEY, JSON.stringify(projects));
+  localStorage.setItem(LOCAL_STORAGE_SELECTED_LIST_ID_KEY, selectedProjectId);
 }
 
 function render() {
-  clearElement(listsContainer);
-  renderLists();
+  clearElement(projectsContainer);
+  renderProjects();
 
-  const selectedList = lists.find((list) => list.id === selectedListId);
-  if (selectedListId == null) {
-    listDisplayContainer.style.display = "none";
+  const selectedProject = projects.find(
+    (project) => project.id === selectedProjectId
+  );
+  if (selectedProjectId == null || selectedProject == null) {
+    projectDisplayContainer.style.display = "none";
   } else {
-    listDisplayContainer.style.display = "";
-    listTitleElement.innerText = selectedList.name;
-    renderTaskCount(selectedList);
-    clearElement(tasksContainer);
-    renderTasks(selectedList);
+    projectDisplayContainer.style.display = "";
+    projectTitleElement.innerText = selectedProject.title;
+    clearElement(todosContainer);
+    renderTodos(selectedProject);
   }
 }
 
-function renderTasks(selectedList) {
-  selectedList.tasks.forEach((task) => {
-    const taskElement = document.importNode(taskTemplate.content, true);
-    const checkbox = taskElement.querySelector("input");
-    checkbox.id = task.id;
-    checkbox.checked = task.complete;
-    const label = taskElement.querySelector("label");
-    label.htmlFor = task.id;
-    label.append(task.name);
-    tasksContainer.appendChild(taskElement);
+function renderTodos(selectedProject) {
+  selectedProject.todos.forEach((todo) => {
+    const todoElement = document.importNode(todoTemplate.content, true);
+    const checkbox = todoElement.querySelector("input");
+    checkbox.id = todo.id;
+    checkbox.checked = todo.complete;
+    const label = todoElement.querySelector("label");
+    label.htmlFor = todo.id;
+    label.append(todo.title);
+    const dueDate = todoElement.getElementById("due");
+    dueDate.innerText = `Due date: ${todo.dueDate}`;
+    const priority = todoElement.getElementById("priority");
+    // priority.innerText = todo.priority;
+    priority.style.backgroundColor = todo.priority;
+
+    todosContainer.appendChild(todoElement);
   });
 }
 
-function renderTaskCount(selectedList) {
-  const incompleteTaskCount = selectedList.tasks.filter(
-    (task) => !task.complete
-  ).length;
-  const taskString = incompleteTaskCount === 1 ? "task" : "tasks";
-  listCountElement.innerText = `${incompleteTaskCount} ${taskString} remaining`;
-}
-
-function renderLists() {
-  lists.forEach((list) => {
-    const listItem = document.createElement("li");
-    listItem.dataset.listId = list.id;
-    listItem.classList.add("list-item");
-    listItem.innerText = list.name;
-    if (list.id === selectedListId) listItem.classList.add("active-list");
-    listsContainer.appendChild(listItem);
+function renderProjects() {
+  projects.forEach((project) => {
+    const projectItem = document.createElement("li");
+    projectItem.dataset.projectId = project.id;
+    projectItem.classList.add("project-item");
+    projectItem.innerText = project.title;
+    if (project.id === selectedProjectId)
+      projectItem.classList.add("active-project");
+    projectsContainer.appendChild(projectItem);
   });
 }
 
