@@ -137,7 +137,7 @@ function handleNewTodoSubmit(e) {
   );
   selectedProject.todos.push(task);
   saveAndRender();
-  closeModal();
+  modal.closeModal("new-todo");
   console.log(projects);
 }
 
