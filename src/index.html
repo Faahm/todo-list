@@ -14,9 +14,9 @@
  
   <body>
 
-    <section class="modal hidden">
+    <section class="modal hidden" data-modal="new-todo">
       <div class="flex">
-        <button class="btn btn-close">⨉</button>
+        <button class="btn btn-close" data-modal-close="new-todo">⨉</button>
       </div>
       <form class="todo-form" action="" data-new-todo-form>
         <input 
@@ -80,17 +80,7 @@
           </div>
 
           <div class="new-task-creator">
-              <!-- <form action="" data-new-todo-form>
-                  <input 
-                    type="text"
-                    data-new-task-input
-                    class="new task"
-                    placeholder="new todo"
-                    aria-label="new todo"
-                  />
-                  <button class="btn create" aria-label="create new task">+</button>
-                </form> -->
-                <button class="btn btn-open">Add new todo</button>
+                <button class="btn btn-open" data-modal-open="new-todo">Add new todo</button>
           </div>
           <div class="delete-stuff">
             <button class="btn delete" data-clear-complete-tasks-button>Clear completed todos</button>

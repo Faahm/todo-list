@@ -23,35 +23,74 @@ const clearCompleteTasksButton = document.querySelector(
   "[data-clear-complete-tasks-button]"
 );
 
-const modal = document.querySelector(".modal");
-const overlay = document.querySelector(".overlay");
-const openModalBtn = document.querySelector(".btn-open");
-const closeModalBtn = document.querySelector(".btn-close");
+// const modal = document.querySelector(".modal");
+// const overlay = document.querySelector(".overlay");
+// const openModalBtn = document.querySelector(".btn-open");
+// const closeModalBtn = document.querySelector(".btn-close");
 
-// close modal function
-function closeModal() {
+// function closeModal() {
+//   modal.classList.add("hidden");
+//   overlay.classList.add("hidden");
+// }
+
+// closeModalBtn.addEventListener("click", closeModal);
+// overlay.addEventListener("click", closeModal);
+
+// document.addEventListener("keydown", function (e) {
+//   if (e.key === "Escape" && !modal.classList.contains("hidden")) {
+//     closeModal();
+//   }
+// });
+
+// openModalBtn.addEventListener("click", openModal);
+
+// function openModal() {
+//   modal.classList.remove("hidden");
+//   overlay.classList.remove("hidden");
+// }
+
+const overlay = document.querySelector(".overlay");
+
+function openModal(modalType) {
+  const modal = document.querySelector(`[data-modal="${modalType}"]`);
+  modal.classList.remove("hidden");
+  overlay.classList.remove("hidden");
+}
+
+function closeModal(modalType) {
+  const modal = document.querySelector(`[data-modal="${modalType}"]`);
   modal.classList.add("hidden");
   overlay.classList.add("hidden");
 }
 
-// close the modal when the close button and overlay is clicked
-closeModalBtn.addEventListener("click", closeModal);
-overlay.addEventListener("click", closeModal);
-
-// close modal when the Esc key is pressed
-document.addEventListener("keydown", function (e) {
-  if (e.key === "Escape" && !modal.classList.contains("hidden")) {
-    closeModal();
+document.addEventListener("click", (e) => {
+  if (e.target.matches("[data-modal-open]")) {
+    const modalType = e.target.getAttribute("data-modal-open");
+    openModal(modalType);
   }
 });
 
-// open modal function
-const openModal = function () {
-  modal.classList.remove("hidden");
-  overlay.classList.remove("hidden");
-};
-// open modal event
-openModalBtn.addEventListener("click", openModal);
+document.addEventListener("click", (e) => {
+  if (e.target.matches("[data-modal-close]")) {
+    const modalType = e.target.getAttribute("data-modal-close");
+    closeModal(modalType);
+  }
+  if (e.target.matches(".overlay")) {
+    document
+      .querySelectorAll(".modal")
+      .forEach((modal) => modal.classList.add("hidden"));
+    overlay.classList.add("hidden");
+  }
+});
+
+document.addEventListener("keydown", (e) => {
+  if (e.key === "Escape") {
+    document
+      .querySelectorAll(".modal")
+      .forEach((modal) => modal.classList.add("hidden"));
+    overlay.classList.add("hidden");
+  }
+});
 
 // task. is added to avoid any collisions/conflicts with the system files and websites
 const LOCAL_STORAGE_LIST_KEY = "task.projects";
@@ -196,7 +235,6 @@ function renderTodos(selectedProject) {
     const dueDate = todoElement.getElementById("due");
     dueDate.innerText = `Due date: ${todo.dueDate}`;
     const priority = todoElement.getElementById("priority");
-    // priority.innerText = todo.priority;
     priority.style.backgroundColor = todo.priority;
 
     todosContainer.appendChild(todoElement);
