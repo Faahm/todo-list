@@ -31,8 +31,27 @@ function setupEscapeListener() {
   });
 }
 
+document.addEventListener("click", (e) => {
+  if (e.target.matches("[data-modal-open]")) {
+    const modalType = e.target.getAttribute("data-modal-open");
+    openModal(modalType);
+  }
+});
+
+document.addEventListener("click", (e) => {
+  if (e.target.matches("[data-modal-close]")) {
+    const modalType = e.target.getAttribute("data-modal-close");
+    closeModal(modalType);
+  }
+  if (e.target.matches(".overlay")) {
+    document
+      .querySelectorAll(".modal")
+      .forEach((modal) => modal.classList.add("hidden"));
+    overlay.classList.add("hidden");
+  }
+});
+
 export default {
-  openModal,
   closeModal,
   setupOverlayListener,
   setupEscapeListener,

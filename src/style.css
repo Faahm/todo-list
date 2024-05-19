@@ -218,10 +218,6 @@ form {
   margin-bottom: 0;
 }
 
-.active-project {
-  font-weight: 700;
-}
-
 .todo-project {
   grid-area: active;
   --spacer: 2rem;

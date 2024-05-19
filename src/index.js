@@ -2,6 +2,7 @@ import "./style.css";
 import modal from "./modules/modal";
 import state from "./modules/state";
 import storage from "./modules/storage";
+import ui from "./modules/ui";
 
 // task. is added to avoid any collisions/conflicts with the system files and websites
 const LOCAL_STORAGE_PROJECTS_KEY = state.getLocalStorageProjectsKey();
@@ -24,7 +25,6 @@ const projectDisplayContainer = document.querySelector(
 );
 const projectTitleElement = document.querySelector("[data-project-title]");
 const todosContainer = document.querySelector("[data-tasks]");
-const todoTemplate = document.getElementById("todo-template");
 const newTodoForm = document.querySelector("[data-new-todo-form]");
 const newTodoTitle = document.querySelector("[data-new-todo-title]");
 const newTodoDescription = document.querySelector(
@@ -36,7 +36,6 @@ const clearCompleteTodosButton = document.querySelector(
   "[data-clear-complete-tasks-button]"
 );
 
-// modal functions
 modal.setupOverlayListener();
 modal.setupEscapeListener();
 
@@ -149,8 +148,8 @@ function saveAndRender() {
 }
 
 function render() {
-  clearElement(projectsContainer);
-  renderProjects();
+  ui.clearElement(projectsContainer);
+  ui.renderProjects();
 
   const selectedProject = projects.find(
     (project) => project.id === selectedProjectId
@@ -160,66 +159,10 @@ function render() {
   } else {
     projectDisplayContainer.style.display = "";
     projectTitleElement.innerText = selectedProject.title;
-    clearElement(todosContainer);
-    renderTodos(selectedProject);
+    ui.clearElement(todosContainer);
+    ui.renderTodos(selectedProject);
   }
 }
-
-function renderTodos(selectedProject) {
-  selectedProject.todos.forEach((todo) => {
-    const todoElement = document.importNode(todoTemplate.content, true);
-    const checkbox = todoElement.querySelector("input");
-    checkbox.id = todo.id;
-    checkbox.checked = todo.complete;
-    const label = todoElement.querySelector("label");
-    label.htmlFor = todo.id;
-    label.append(todo.title);
-    const dueDate = todoElement.getElementById("due");
-    dueDate.innerText = `Due date: ${todo.dueDate}`;
-    const priority = todoElement.getElementById("priority");
-    priority.style.backgroundColor = todo.priority;
-
-    todosContainer.appendChild(todoElement);
-  });
-}
-
-function renderProjects() {
-  projects.forEach((project) => {
-    const projectItem = document.createElement("li");
-    projectItem.dataset.projectId = project.id;
-    projectItem.classList.add("project-item");
-    projectItem.innerText = project.title;
-    if (project.id === selectedProjectId)
-      projectItem.classList.add("active-project");
-    projectsContainer.appendChild(projectItem);
-  });
-}
-
-function clearElement(element) {
-  while (element.firstChild) {
-    element.removeChild(element.firstChild);
-  }
-}
-
-document.addEventListener("click", (e) => {
-  if (e.target.matches("[data-modal-open]")) {
-    const modalType = e.target.getAttribute("data-modal-open");
-    modal.openModal(modalType);
-  }
-});
-
-document.addEventListener("click", (e) => {
-  if (e.target.matches("[data-modal-close]")) {
-    const modalType = e.target.getAttribute("data-modal-close");
-    modal.closeModal(modalType);
-  }
-  if (e.target.matches(".overlay")) {
-    document
-      .querySelectorAll(".modal")
-      .forEach((modal) => modal.classList.add("hidden"));
-    overlay.classList.add("hidden");
-  }
-});
 
 projectsContainer.addEventListener("click", (e) => {
   if (e.target.tagName.toLowerCase() === "li") {
