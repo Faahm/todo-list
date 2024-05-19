@@ -1,6 +1,7 @@
 import "./style.css";
 import modal from "./modules/modal";
 import state from "./modules/state";
+import storage from "./modules/storage";
 
 // task. is added to avoid any collisions/conflicts with the system files and websites
 const LOCAL_STORAGE_PROJECTS_KEY = state.getLocalStorageProjectsKey();
@@ -48,7 +49,7 @@ function handleTodoItemCheck(e) {
       (task) => task.id === e.target.id
     );
     selectedTask.complete = e.target.checked;
-    save();
+    storage.save();
   }
 }
 
@@ -89,7 +90,9 @@ function handleNewProjectSubmit(e) {
   const project = createProject(projectName);
   newProjectInput.value = null;
   projects.push(project);
+  state.setProjects(projects);
   selectedProjectId = project.id;
+  state.setSelectedProjectId(selectedProjectId);
   saveAndRender();
 }
 
@@ -141,16 +144,8 @@ function createTodo(title, description, dueDate, priority) {
 }
 
 function saveAndRender() {
-  save();
+  storage.save();
   render();
-}
-
-function save() {
-  localStorage.setItem(LOCAL_STORAGE_PROJECTS_KEY, JSON.stringify(projects));
-  localStorage.setItem(
-    LOCAL_STORAGE_SELECTED_PROJECT_ID_KEY,
-    selectedProjectId
-  );
 }
 
 function render() {
