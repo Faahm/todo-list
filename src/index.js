@@ -1,5 +1,16 @@
 import "./style.css";
 import modal from "./modules/modal";
+import state from "./modules/state";
+
+// task. is added to avoid any collisions/conflicts with the system files and websites
+const LOCAL_STORAGE_PROJECTS_KEY = state.getLocalStorageProjectsKey();
+const LOCAL_STORAGE_SELECTED_PROJECT_ID_KEY =
+  state.getLocalStorageSelectedProjectIdKey();
+let projects =
+  JSON.parse(localStorage.getItem(LOCAL_STORAGE_PROJECTS_KEY)) || [];
+let selectedProjectId = localStorage.getItem(
+  LOCAL_STORAGE_SELECTED_PROJECT_ID_KEY
+);
 
 const projectsContainer = document.querySelector("[data-projects]");
 const newProjectForm = document.querySelector("[data-new-project-form]");
@@ -28,43 +39,6 @@ const clearCompleteTodosButton = document.querySelector(
 modal.setupOverlayListener();
 modal.setupEscapeListener();
 
-document.addEventListener("click", (e) => {
-  if (e.target.matches("[data-modal-open]")) {
-    const modalType = e.target.getAttribute("data-modal-open");
-    modal.openModal(modalType);
-  }
-});
-
-document.addEventListener("click", (e) => {
-  if (e.target.matches("[data-modal-close]")) {
-    const modalType = e.target.getAttribute("data-modal-close");
-    modal.closeModal(modalType);
-  }
-  if (e.target.matches(".overlay")) {
-    document
-      .querySelectorAll(".modal")
-      .forEach((modal) => modal.classList.add("hidden"));
-    overlay.classList.add("hidden");
-  }
-});
-
-// task. is added to avoid any collisions/conflicts with the system files and websites
-const LOCAL_STORAGE_LIST_KEY = "task.projects";
-const LOCAL_STORAGE_SELECTED_LIST_ID_KEY = "task.selectedProjectId";
-let projects = JSON.parse(localStorage.getItem(LOCAL_STORAGE_LIST_KEY)) || [];
-let selectedProjectId = localStorage.getItem(
-  LOCAL_STORAGE_SELECTED_LIST_ID_KEY
-);
-
-projectsContainer.addEventListener("click", (e) => {
-  if (e.target.tagName.toLowerCase() === "li") {
-    selectedProjectId = e.target.dataset.projectId;
-    saveAndRender();
-  }
-});
-
-todosContainer.addEventListener("click", handleTodoItemCheck);
-
 function handleTodoItemCheck(e) {
   if (e.target.tagName.toLowerCase() === "input") {
     const selectedProject = projects.find(
@@ -78,15 +52,25 @@ function handleTodoItemCheck(e) {
   }
 }
 
-deleteProjectButton.addEventListener("click", handleDeleteProject);
-
 function handleDeleteProject() {
+  const projectIndex = projects.findIndex(
+    (project) => project.id === selectedProjectId
+  );
+
   projects = projects.filter((project) => project.id !== selectedProjectId);
-  selectedProjectId = null;
+  state.setProjects(projects);
+
+  let newSelectedProjectId = null;
+  if (projects.length > 0) {
+    if (projectIndex > 0) {
+      newSelectedProjectId = projects[projectIndex - 1].id;
+    } else {
+      newSelectedProjectId = projects[0].id;
+    }
+  }
+  selectedProjectId = newSelectedProjectId;
   saveAndRender();
 }
-
-clearCompleteTodosButton.addEventListener("click", handleClearCompleteTodos);
 
 function handleClearCompleteTodos() {
   const selectedProject = projects.find(
@@ -98,8 +82,6 @@ function handleClearCompleteTodos() {
   saveAndRender();
 }
 
-newProjectForm.addEventListener("submit", handleNewProjectSubmit);
-
 function handleNewProjectSubmit(e) {
   e.preventDefault();
   const projectName = newProjectInput.value;
@@ -110,8 +92,6 @@ function handleNewProjectSubmit(e) {
   selectedProjectId = project.id;
   saveAndRender();
 }
-
-newTodoForm.addEventListener("submit", handleNewTodoSubmit);
 
 function handleNewTodoSubmit(e) {
   e.preventDefault();
@@ -166,8 +146,11 @@ function saveAndRender() {
 }
 
 function save() {
-  localStorage.setItem(LOCAL_STORAGE_LIST_KEY, JSON.stringify(projects));
-  localStorage.setItem(LOCAL_STORAGE_SELECTED_LIST_ID_KEY, selectedProjectId);
+  localStorage.setItem(LOCAL_STORAGE_PROJECTS_KEY, JSON.stringify(projects));
+  localStorage.setItem(
+    LOCAL_STORAGE_SELECTED_PROJECT_ID_KEY,
+    selectedProjectId
+  );
 }
 
 function render() {
@@ -222,5 +205,38 @@ function clearElement(element) {
     element.removeChild(element.firstChild);
   }
 }
+
+document.addEventListener("click", (e) => {
+  if (e.target.matches("[data-modal-open]")) {
+    const modalType = e.target.getAttribute("data-modal-open");
+    modal.openModal(modalType);
+  }
+});
+
+document.addEventListener("click", (e) => {
+  if (e.target.matches("[data-modal-close]")) {
+    const modalType = e.target.getAttribute("data-modal-close");
+    modal.closeModal(modalType);
+  }
+  if (e.target.matches(".overlay")) {
+    document
+      .querySelectorAll(".modal")
+      .forEach((modal) => modal.classList.add("hidden"));
+    overlay.classList.add("hidden");
+  }
+});
+
+projectsContainer.addEventListener("click", (e) => {
+  if (e.target.tagName.toLowerCase() === "li") {
+    selectedProjectId = e.target.dataset.projectId;
+    saveAndRender();
+  }
+});
+
+todosContainer.addEventListener("click", handleTodoItemCheck);
+newProjectForm.addEventListener("submit", handleNewProjectSubmit);
+deleteProjectButton.addEventListener("click", handleDeleteProject);
+newTodoForm.addEventListener("submit", handleNewTodoSubmit);
+clearCompleteTodosButton.addEventListener("click", handleClearCompleteTodos);
 
 render();
