@@ -1,8 +1,5 @@
 import state from "./state";
 
-let projects = state.getProjects();
-let selectedProjectId = state.getSelectedProjectId();
-
 const projectsContainer = document.querySelector("[data-projects]");
 const todosContainer = document.querySelector("[data-tasks]");
 const todoTemplate = document.getElementById("todo-template");

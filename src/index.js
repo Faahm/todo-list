@@ -3,6 +3,7 @@ import modal from "./modules/modal";
 import state from "./modules/state";
 import storage from "./modules/storage";
 import ui from "./modules/ui";
+import project from "./modules/project";
 
 // task. is added to avoid any collisions/conflicts with the system files and websites
 const LOCAL_STORAGE_PROJECTS_KEY = state.getLocalStorageProjectsKey();

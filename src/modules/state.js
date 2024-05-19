@@ -22,7 +22,6 @@ function getProjects() {
 
 function setProjects(newProjects) {
   projects = newProjects;
-  localStorage.setItem("task.projects", JSON.stringify(projects));
 }
 
 function getSelectedProjectId() {
@@ -31,7 +30,6 @@ function getSelectedProjectId() {
 
 function setSelectedProjectId(newSelectedProjectId) {
   selectedProjectId = newSelectedProjectId;
-  localStorage.setItem("task.selectedProjectId", selectedProjectId);
 }
 
 export default {
