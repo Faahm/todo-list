@@ -3,7 +3,7 @@ import modal from "./modules/modal";
 import state from "./modules/state";
 import storage from "./modules/storage";
 import ui from "./modules/ui";
-import project from "./modules/project";
+import projectFunctions from "./modules/projectFunctions";
 
 // task. is added to avoid any collisions/conflicts with the system files and websites
 const LOCAL_STORAGE_PROJECTS_KEY = state.getLocalStorageProjectsKey();
@@ -13,11 +13,6 @@ let projects =
   JSON.parse(localStorage.getItem(LOCAL_STORAGE_PROJECTS_KEY)) || [];
 let selectedProjectId = localStorage.getItem(
   LOCAL_STORAGE_SELECTED_PROJECT_ID_KEY
-);
-const newProjectForm = document.querySelector("[data-new-project-form]");
-const newProjectInput = document.querySelector("[data-new-project-input]");
-const deleteProjectButton = document.querySelector(
-  "[data-delete-project-button]"
 );
 const todosContainer = document.querySelector("[data-tasks]");
 const newTodoForm = document.querySelector("[data-new-todo-form]");
@@ -47,26 +42,6 @@ function handleTodoItemCheck(e) {
   }
 }
 
-function handleDeleteProject() {
-  const projectIndex = projects.findIndex(
-    (project) => project.id === selectedProjectId
-  );
-
-  projects = projects.filter((project) => project.id !== selectedProjectId);
-  state.setProjects(projects);
-
-  let newSelectedProjectId = null;
-  if (projects.length > 0) {
-    if (projectIndex > 0) {
-      newSelectedProjectId = projects[projectIndex - 1].id;
-    } else {
-      newSelectedProjectId = projects[0].id;
-    }
-  }
-  selectedProjectId = newSelectedProjectId;
-  saveAndRender();
-}
-
 function handleClearCompleteTodos() {
   const selectedProject = projects.find(
     (project) => project.id === selectedProjectId
@@ -74,19 +49,6 @@ function handleClearCompleteTodos() {
   selectedProject.todos = selectedProject.todos.filter(
     (task) => !task.complete
   );
-  saveAndRender();
-}
-
-function handleNewProjectSubmit(e) {
-  e.preventDefault();
-  const projectName = newProjectInput.value;
-  if (projectName == null || projectName === "") return;
-  const project = createProject(projectName);
-  newProjectInput.value = null;
-  projects.push(project);
-  state.setProjects(projects);
-  selectedProjectId = project.id;
-  state.setSelectedProjectId(selectedProjectId);
   saveAndRender();
 }
 
@@ -118,14 +80,6 @@ function handleNewTodoSubmit(e) {
   console.log(projects);
 }
 
-function createProject(title) {
-  return {
-    id: Date.now().toString(),
-    title: title,
-    todos: [],
-  };
-}
-
 function createTodo(title, description, dueDate, priority) {
   return {
     id: Date.now().toString(),
@@ -143,8 +97,6 @@ function saveAndRender() {
 }
 
 todosContainer.addEventListener("click", handleTodoItemCheck);
-newProjectForm.addEventListener("submit", handleNewProjectSubmit);
-deleteProjectButton.addEventListener("click", handleDeleteProject);
 newTodoForm.addEventListener("submit", handleNewTodoSubmit);
 clearCompleteTodosButton.addEventListener("click", handleClearCompleteTodos);
 
