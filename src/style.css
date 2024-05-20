@@ -187,7 +187,6 @@ form {
 
 .new::placeholder {
   opacity: 0.4;
-  color: var(--background);
 }
 
 .new:focus {
