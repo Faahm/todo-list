@@ -32,6 +32,16 @@ function handleNewProjectSubmit(e) {
   ui.render();
 }
 
+function updateProjectTitle(projectId, newTitle) {
+  let projects = state.getProjects();
+  const project = projects.find((project) => project.id === projectId);
+  if (project) {
+    project.title = newTitle;
+    state.setProjects(projects);
+    storage.save();
+  }
+}
+
 function handleDeleteProject() {
   let projects = state.getProjects();
   let selectedProjectId = state.getSelectedProjectId();
@@ -61,5 +71,6 @@ deleteProjectButton.addEventListener("click", handleDeleteProject);
 
 export default {
   handleNewProjectSubmit,
+  updateProjectTitle,
   handleDeleteProject,
 };

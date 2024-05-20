@@ -1,5 +1,6 @@
 import state from "./state";
 import storage from "./storage";
+import projectFunctions from "./projectFunctions";
 
 const projectsContainer = document.querySelector("[data-projects]");
 const todosContainer = document.querySelector("[data-tasks]");
@@ -8,6 +9,9 @@ const projectDisplayContainer = document.querySelector(
   "[data-project-display-container]"
 );
 const projectTitleElement = document.querySelector("[data-project-title]");
+const projectTitleEditBtn = document.querySelector(
+  "[data-project-title-edit-btn]"
+);
 
 function clearElement(element) {
   while (element.firstChild) {
@@ -62,6 +66,46 @@ function render() {
     renderTodos(selectedProject);
   }
 }
+
+function handleEditProjectTitle() {
+  const isEditing = projectTitleEditBtn.innerText === "Save";
+  if (isEditing) {
+    const projectTitleInput = document.querySelector(".project-title-input");
+    const newTitle = projectTitleInput.value.trim();
+    if (newTitle && newTitle !== projectTitleElement.innerText) {
+      projectFunctions.updateProjectTitle(
+        state.getSelectedProjectId(),
+        newTitle
+      );
+    }
+    projectTitleElement.style.display = "block";
+    projectTitleEditBtn.innerText = "Edit";
+    projectTitleInput.remove();
+    render();
+  } else {
+    const projectTitle = projectTitleElement.innerText;
+    projectTitleElement.style.display = "none";
+
+    const projectTitleInput = document.createElement("input");
+    projectTitleInput.type = "text";
+    projectTitleInput.value = projectTitle;
+    projectTitleInput.classList.add("project-title-input");
+
+    projectTitleElement.parentElement.insertBefore(
+      projectTitleInput,
+      projectTitleEditBtn
+    );
+    projectTitleInput.focus();
+    projectTitleEditBtn.innerText = "Save";
+    projectTitleInput.addEventListener("keypress", (e) => {
+      if (e.key === "Enter") {
+        projectTitleEditBtn.click();
+      }
+    });
+  }
+}
+
+projectTitleEditBtn.addEventListener("click", handleEditProjectTitle);
 
 projectsContainer.addEventListener("click", (e) => {
   let selectedProjectId = state.getSelectedProjectId();
