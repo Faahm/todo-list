@@ -14,17 +14,11 @@ let projects =
 let selectedProjectId = localStorage.getItem(
   LOCAL_STORAGE_SELECTED_PROJECT_ID_KEY
 );
-
-const projectsContainer = document.querySelector("[data-projects]");
 const newProjectForm = document.querySelector("[data-new-project-form]");
 const newProjectInput = document.querySelector("[data-new-project-input]");
 const deleteProjectButton = document.querySelector(
   "[data-delete-project-button]"
 );
-const projectDisplayContainer = document.querySelector(
-  "[data-project-display-container]"
-);
-const projectTitleElement = document.querySelector("[data-project-title]");
 const todosContainer = document.querySelector("[data-tasks]");
 const newTodoForm = document.querySelector("[data-new-todo-form]");
 const newTodoTitle = document.querySelector("[data-new-todo-title]");
@@ -145,32 +139,8 @@ function createTodo(title, description, dueDate, priority) {
 
 function saveAndRender() {
   storage.save();
-  render();
+  ui.render();
 }
-
-function render() {
-  ui.clearElement(projectsContainer);
-  ui.renderProjects();
-
-  const selectedProject = projects.find(
-    (project) => project.id === selectedProjectId
-  );
-  if (selectedProjectId == null || selectedProject == null) {
-    projectDisplayContainer.style.display = "none";
-  } else {
-    projectDisplayContainer.style.display = "";
-    projectTitleElement.innerText = selectedProject.title;
-    ui.clearElement(todosContainer);
-    ui.renderTodos(selectedProject);
-  }
-}
-
-projectsContainer.addEventListener("click", (e) => {
-  if (e.target.tagName.toLowerCase() === "li") {
-    selectedProjectId = e.target.dataset.projectId;
-    saveAndRender();
-  }
-});
 
 todosContainer.addEventListener("click", handleTodoItemCheck);
 newProjectForm.addEventListener("submit", handleNewProjectSubmit);
@@ -178,4 +148,4 @@ deleteProjectButton.addEventListener("click", handleDeleteProject);
 newTodoForm.addEventListener("submit", handleNewTodoSubmit);
 clearCompleteTodosButton.addEventListener("click", handleClearCompleteTodos);
 
-render();
+ui.render();
