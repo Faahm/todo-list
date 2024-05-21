@@ -30,13 +30,50 @@ body {
   grid-template-columns: minmax(100px, 300px) minmax(250px, 500px) 1fr 1fr;
 }
 
-.tasks {
+.todo-header .project-title {
+  flex-grow: 1;
+}
+
+.todo-header .project-title-input {
+  width: 100%;
+  font-size: inherit;
+  border: none;
+  border-bottom: 2px solid transparent;
+  outline: none;
+  transition: border-bottom-color 0.3s;
+}
+
+.todo-header .project-title-input:focus {
+  border-bottom-color: var(--primary);
+}
+
+.todo-item {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 1rem;
+}
+
+.todo-item p,
+.todo-item h2,
+.todo-item input,
+.todo-item textarea,
+.todo-item select {
+  flex-grow: 1;
+  margin: 0;
+}
+
+.todo-item .btn.edit {
+  margin-left: 1rem;
+}
+
+.todos {
   display: flex;
   flex-direction: column;
   gap: 8px;
 }
 
-.task {
+.todo {
   display: flex;
   justify-content: space-between;
 }
@@ -193,18 +230,6 @@ form {
   border-bottom-width: 3px;
 }
 
-.new:focus::-webkit-input-placeholder {
-  opacity: 0.15;
-}
-
-.new:focus:-ms-input-placeholder {
-  opacity: 0.15;
-}
-
-.new:focus::-ms-input-placeholder {
-  opacity: 0.15;
-}
-
 .new:focus::placeholder {
   opacity: 0.15;
 }
@@ -243,7 +268,7 @@ form {
   position: relative;
 }
 
-.new-task-creator .create {
+.new-todo-creator .create {
   color: var(--primary);
 }
 

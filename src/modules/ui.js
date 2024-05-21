@@ -15,6 +15,12 @@ const projectTitleEditBtn = document.querySelector(
   "[data-project-title-edit-btn]"
 );
 
+const priorityMapping = {
+  green: "Low",
+  orange: "Medium",
+  red: "High",
+};
+
 let currentTodoId = null;
 
 function clearElement(element) {
@@ -110,12 +116,6 @@ function handleEditProjectTitle() {
 }
 
 function handleViewTodoDetails(e) {
-  const priorityMapping = {
-    green: "Low",
-    orange: "Medium",
-    red: "High",
-  };
-
   if (e.target.tagName.toLowerCase() === "input") return; // Ignore checkbox clicks
   const selectedProjectId = state.getSelectedProjectId();
   const projects = state.getProjects();
