@@ -52,6 +52,7 @@ document.addEventListener("click", (e) => {
 });
 
 export default {
+  openModal,
   closeModal,
   setupOverlayListener,
   setupEscapeListener,

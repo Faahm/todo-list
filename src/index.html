@@ -48,6 +48,39 @@
         <button class="btn create" aria-label="create todo">Create Todo</button>
       </form>
     </section>
+
+    <section class="modal hidden" data-modal="view-todo">
+      <div class="flex">
+        <button class="btn btn-close" data-modal-close="view-todo">⨉</button>
+      </div>
+      <div class="todo-details">
+        <div class="todo-item">
+          <h2 class="todo-title" data-todo-title></h2>
+          <input type="text" class="todo-input hidden" data-todo-title-input />
+          <button class="btn edit" data-edit-todo-title>Edit</button>
+        </div>
+        <div class="todo-item">
+          <p class="todo-description" data-todo-description></p>
+          <textarea class="todo-input hidden" data-todo-description-input></textarea>
+          <button class="btn edit" data-edit-todo-description>Edit</button>
+        </div>
+        <div class="todo-item">
+          <p class="todo-due-date" data-todo-due-date></p>
+          <input type="date" class="todo-input hidden" data-todo-due-date-input />
+          <button class="btn edit" data-edit-todo-due-date>Edit</button>
+        </div>
+        <div class="todo-item">
+          <p class="todo-priority" data-todo-priority></p>
+          <select class="todo-input hidden" data-todo-priority-input>
+            <option value="green">Low</option>
+            <option value="orange">Medium</option>
+            <option value="red">High</option>
+          </select>
+          <button class="btn edit" data-edit-todo-priority>Edit</button>
+        </div>
+        <button class="btn delete" data-delete-todo-button>Delete Todo</button>
+      </div>
+    </section>        
     
     <div class="overlay hidden"></div>
 

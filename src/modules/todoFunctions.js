@@ -35,7 +35,7 @@ function handleNewTodoSubmit(e) {
 
   if (todoTitle == null || todoTitle === "") return;
 
-  const task = createTodo(
+  const todo = createTodo(
     todoTitle,
     todoDescription,
     todoDueDate,
@@ -50,16 +50,16 @@ function handleNewTodoSubmit(e) {
   const selectedProject = projects.find(
     (project) => project.id === selectedProjectId
   );
-  selectedProject.todos.push(task);
+  selectedProject.todos.push(todo);
   storage.save();
   ui.render();
   modal.closeModal("new-todo");
 }
 
 function handleTodoItemCheck(e) {
-  const selectedProjectId = state.getSelectedProjectId();
-  const projects = state.getProjects();
   if (e.target.tagName.toLowerCase() === "input") {
+    const selectedProjectId = state.getSelectedProjectId();
+    const projects = state.getProjects();
     const selectedProject = projects.find(
       (project) => project.id === selectedProjectId
     );
@@ -68,6 +68,22 @@ function handleTodoItemCheck(e) {
     );
     selectedTask.complete = e.target.checked;
     storage.save();
+  }
+}
+
+function updateTodoElement(todoId, key, value) {
+  const selectedProjectId = state.getSelectedProjectId();
+  const projects = state.getProjects();
+  const selectedProject = projects.find(
+    (project) => project.id === selectedProjectId
+  );
+  const selectedTodo = selectedProject.todos.find((todo) => todo.id === todoId);
+  if (selectedTodo) {
+    selectedTodo[key] = value;
+    storage.save();
+    ui.render();
+  } else {
+    console.error(`Todo with ID ${todoId} not found.`);
   }
 }
 
@@ -84,12 +100,31 @@ function handleClearCompleteTodos() {
   ui.render();
 }
 
+function handleDeleteTodoItem(todoId) {
+  const selectedProjectId = state.getSelectedProjectId();
+  let projects = state.getProjects();
+  const selectedProject = projects.find(
+    (project) => project.id === selectedProjectId
+  );
+
+  selectedProject.todos = selectedProject.todos.filter(
+    (todo) => todo.id !== todoId
+  );
+  state.setProjects(projects);
+  storage.save();
+  ui.render();
+  modal.closeModal("view-todo");
+}
+
 todosContainer.addEventListener("click", handleTodoItemCheck);
+
 newTodoForm.addEventListener("submit", handleNewTodoSubmit);
 clearCompleteTodosButton.addEventListener("click", handleClearCompleteTodos);
 
 export default {
   handleNewTodoSubmit,
   handleTodoItemCheck,
+  updateTodoElement,
   handleClearCompleteTodos,
+  handleDeleteTodoItem,
 };

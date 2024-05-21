@@ -1,6 +1,8 @@
 import state from "./state";
 import storage from "./storage";
 import projectFunctions from "./projectFunctions";
+import todoFunctions from "./todoFunctions";
+import modal from "./modal";
 
 const projectsContainer = document.querySelector("[data-projects]");
 const todosContainer = document.querySelector("[data-tasks]");
@@ -12,6 +14,8 @@ const projectTitleElement = document.querySelector("[data-project-title]");
 const projectTitleEditBtn = document.querySelector(
   "[data-project-title-edit-btn]"
 );
+
+let currentTodoId = null;
 
 function clearElement(element) {
   while (element.firstChild) {
@@ -105,7 +109,153 @@ function handleEditProjectTitle() {
   }
 }
 
+function handleViewTodoDetails(e) {
+  const priorityMapping = {
+    green: "Low",
+    orange: "Medium",
+    red: "High",
+  };
+
+  if (e.target.tagName.toLowerCase() === "input") return; // Ignore checkbox clicks
+  const selectedProjectId = state.getSelectedProjectId();
+  const projects = state.getProjects();
+  const selectedProject = projects.find(
+    (project) => project.id === selectedProjectId
+  );
+  const todoId = e.currentTarget.querySelector("input").id;
+  currentTodoId = todoId;
+  const selectedTodo = selectedProject.todos.find((todo) => todo.id === todoId);
+
+  document.querySelector("[data-todo-title]").innerText = selectedTodo.title;
+  document.querySelector("[data-todo-title-input]").value = selectedTodo.title;
+  document.querySelector("[data-todo-description]").innerText =
+    selectedTodo.description;
+  document.querySelector("[data-todo-description-input]").value =
+    selectedTodo.description;
+  document.querySelector(
+    "[data-todo-due-date]"
+  ).innerText = `Due date: ${selectedTodo.dueDate}`;
+  document.querySelector("[data-todo-due-date-input]").value =
+    selectedTodo.dueDate;
+  document.querySelector("[data-todo-priority]").innerText = `Priority: ${
+    priorityMapping[selectedTodo.priority]
+  }`;
+  document.querySelector("[data-todo-priority-input]").value =
+    selectedTodo.priority;
+
+  const deleteButton = document.querySelector("[data-delete-todo-button]");
+  deleteButton.onclick = () => todoFunctions.handleDeleteTodoItem(todoId);
+
+  modal.openModal("view-todo");
+}
+
+function handleEditTodoElement(
+  editBtn,
+  displayElement,
+  inputElement,
+  saveCallback
+) {
+  const isEditing = editBtn.innerText === "Save";
+  if (isEditing) {
+    const newValue = inputElement.value.trim();
+    saveCallback(newValue);
+    displayElement.innerText = newValue;
+    displayElement.style.display = "block";
+    inputElement.classList.add("hidden");
+    editBtn.innerText = "Edit";
+    storage.save();
+    render();
+  } else {
+    inputElement.value = displayElement.innerText;
+    displayElement.style.display = "none";
+    inputElement.classList.remove("hidden");
+    inputElement.focus();
+    editBtn.innerText = "Save";
+  }
+}
+
+// Use currentTodoId in the edit button click handlers
+document
+  .querySelector("[data-edit-todo-title]")
+  .addEventListener("click", (e) => {
+    handleEditTodoElement(
+      e.target,
+      document.querySelector("[data-todo-title]"),
+      document.querySelector("[data-todo-title-input]"),
+      (newValue) =>
+        todoFunctions.updateTodoElement(currentTodoId, "title", newValue)
+    );
+  });
+
+document
+  .querySelector("[data-edit-todo-description]")
+  .addEventListener("click", (e) => {
+    handleEditTodoElement(
+      e.target,
+      document.querySelector("[data-todo-description]"),
+      document.querySelector("[data-todo-description-input]"),
+      (newValue) =>
+        todoFunctions.updateTodoElement(currentTodoId, "description", newValue)
+    );
+  });
+
+document
+  .querySelector("[data-edit-todo-due-date]")
+  .addEventListener("click", (e) => {
+    handleEditTodoElement(
+      e.target,
+      document.querySelector("[data-todo-due-date]"),
+      document.querySelector("[data-todo-due-date-input]"),
+      (newValue) =>
+        todoFunctions.updateTodoElement(currentTodoId, "dueDate", newValue)
+    );
+  });
+
+document
+  .querySelector("[data-edit-todo-priority]")
+  .addEventListener("click", (e) => {
+    handleEditTodoElement(
+      e.target,
+      document.querySelector("[data-todo-priority]"),
+      document.querySelector("[data-todo-priority-input]"),
+      (newValue) =>
+        todoFunctions.updateTodoElement(currentTodoId, "priority", newValue)
+    );
+  });
+
 projectTitleEditBtn.addEventListener("click", handleEditProjectTitle);
+
+document
+  .querySelector("[data-todo-title-input]")
+  .addEventListener("keydown", (e) => {
+    if (e.key === "Enter") {
+      document.querySelector("[data-edit-todo-title]").click();
+    }
+  });
+
+document
+  .querySelector("[data-todo-description-input]")
+  .addEventListener("keydown", (e) => {
+    if (e.key === "Enter") {
+      document.querySelector("[data-edit-todo-description]").click();
+    }
+  });
+
+document
+  .querySelector("[data-todo-due-date-input]")
+  .addEventListener("keydown", (e) => {
+    if (e.key === "Enter") {
+      document.querySelector("[data-edit-todo-due-date]").click();
+    }
+  });
+
+document
+  .querySelector("[data-todo-priority-input]")
+  .addEventListener("keydown", (e) => {
+    if (e.key === "Enter") {
+      document.querySelector("[data-edit-todo-priority]").click();
+    }
+  });
 
 projectsContainer.addEventListener("click", (e) => {
   let selectedProjectId = state.getSelectedProjectId();
@@ -114,6 +264,12 @@ projectsContainer.addEventListener("click", (e) => {
     state.setSelectedProjectId(selectedProjectId);
     storage.save();
     render();
+  }
+});
+
+todosContainer.addEventListener("click", (e) => {
+  if (e.target.tagName.toLowerCase() !== "input") {
+    handleViewTodoDetails(e);
   }
 });
 

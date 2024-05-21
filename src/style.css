@@ -282,19 +282,7 @@ form {
   cursor: pointer;
   border: 2px solid currentColor;
   border-radius: 25%;
-  /* -webkit-transform: scale(1);
-  transform: scale(1);
-  transition: -webkit-transform 300ms ease-in-out;
-  transition: transform 300ms ease-in-out;
-  transition: transform 300ms ease-in-out, -webkit-transform 300ms ease-in-out; */
 }
-
-/* .task:hover .custom-checkbox,
-[type="checkbox"]:focus + label .custom-checkbox {
-  -webkit-transform: scale(1.2);
-  transform: scale(1.2);
-  color: var(--primary);
-} */
 
 [type="checkbox"]:checked + label .custom-checkbox {
   background: var(--primary);
