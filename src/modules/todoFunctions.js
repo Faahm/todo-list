@@ -3,7 +3,7 @@ import ui from "./ui";
 import state from "./state";
 import modal from "./modal";
 
-const todosContainer = document.querySelector("[data-tasks]");
+const todosContainer = document.querySelector("[data-todos]");
 const newTodoForm = document.querySelector("[data-new-todo-form]");
 const newTodoTitle = document.querySelector("[data-new-todo-title]");
 const newTodoDescription = document.querySelector(

@@ -278,11 +278,6 @@ form {
   color: var(--primary);
 }
 
-/* [type="checkbox"] {
-  opacity: 0;
-  position: absolute;
-} */
-
 .todo label {
   display: flex-inline;
   align-items: center;

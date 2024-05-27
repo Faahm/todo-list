@@ -5,7 +5,7 @@ import todoFunctions from "./todoFunctions";
 import modal from "./modal";
 
 const projectsContainer = document.querySelector("[data-projects]");
-const todosContainer = document.querySelector("[data-tasks]");
+const todosContainer = document.querySelector("[data-todos]");
 const todoTemplate = document.getElementById("todo-template");
 const projectDisplayContainer = document.querySelector(
   "[data-project-display-container]"
