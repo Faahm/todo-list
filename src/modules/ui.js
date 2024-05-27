@@ -174,7 +174,6 @@ function handleEditTodoElement(
   }
 }
 
-// Use currentTodoId in the edit button click handlers
 document
   .querySelector("[data-edit-todo-title]")
   .addEventListener("click", (e) => {
@@ -268,7 +267,7 @@ projectsContainer.addEventListener("click", (e) => {
 });
 
 todosContainer.addEventListener("click", (e) => {
-  if (e.target.tagName.toLowerCase() !== "input") {
+  if (e.target.tagName.toLowerCase() === "label") {
     handleViewTodoDetails(e);
   }
 });

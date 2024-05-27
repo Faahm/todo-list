@@ -57,7 +57,11 @@ function handleNewTodoSubmit(e) {
 }
 
 function handleTodoItemCheck(e) {
-  if (e.target.tagName.toLowerCase() === "input") {
+  if (
+    e.target.tagName.toLowerCase() === "input" &&
+    e.target.type === "checkbox"
+  ) {
+    console.log(e.target.tagName.toLowerCase());
     const selectedProjectId = state.getSelectedProjectId();
     const projects = state.getProjects();
     const selectedProject = projects.find(
@@ -78,13 +82,10 @@ function updateTodoElement(todoId, key, value) {
     (project) => project.id === selectedProjectId
   );
   const selectedTodo = selectedProject.todos.find((todo) => todo.id === todoId);
-  if (selectedTodo) {
-    selectedTodo[key] = value;
-    storage.save();
-    ui.render();
-  } else {
-    console.error(`Todo with ID ${todoId} not found.`);
-  }
+
+  selectedTodo[key] = value;
+  storage.save();
+  ui.render();
 }
 
 function handleClearCompleteTodos() {

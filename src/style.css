@@ -30,6 +30,14 @@ body {
   grid-template-columns: minmax(100px, 300px) minmax(250px, 500px) 1fr 1fr;
 }
 
+.btn.delete {
+  margin-top: 8px;
+  color: var(--background);
+  background-color: red;
+  padding: 8px;
+  border-radius: 8px;
+}
+
 .todo-header .project-title {
   flex-grow: 1;
 }
@@ -174,10 +182,6 @@ body {
   cursor: pointer;
 }
 
-.project-name:hover {
-  opacity: 0.7;
-}
-
 form {
   display: flex;
 }
@@ -249,6 +253,7 @@ form {
   color: var(--text);
   width: 60vw;
   height: auto;
+  border-radius: 16px;
 }
 
 .todo-header {
@@ -257,6 +262,7 @@ form {
   display: flex;
   align-items: center;
   justify-content: space-between;
+  border-radius: 16px 16px 0 0;
 }
 
 .project-title {
