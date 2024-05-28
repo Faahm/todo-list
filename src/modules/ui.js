@@ -43,12 +43,14 @@ function renderProjects() {
 function renderTodos(selectedProject) {
   selectedProject.todos.forEach((todo) => {
     const todoElement = document.importNode(todoTemplate.content, true);
-    const checkbox = todoElement.querySelector("input");
+    const checkbox = todoElement.querySelector("[data-todo-checkbox]");
     checkbox.id = todo.id;
     checkbox.checked = todo.complete;
-    const label = todoElement.querySelector("label");
+    checkbox.addEventListener("click", todoFunctions.handleTodoItemCheck);
+    const label = todoElement.querySelector("[data-todo-label]");
     label.htmlFor = todo.id;
     label.append(todo.title);
+    label.addEventListener("click", (e) => handleViewTodoDetails(e));
     const dueDate = todoElement.getElementById("due");
     dueDate.innerText = `Due date: ${todo.dueDate}`;
     const priority = todoElement.getElementById("priority");
@@ -116,13 +118,13 @@ function handleEditProjectTitle() {
 }
 
 function handleViewTodoDetails(e) {
-  if (e.target.tagName.toLowerCase() === "input") return; // Ignore checkbox clicks
+  e.stopPropagation();
   const selectedProjectId = state.getSelectedProjectId();
   const projects = state.getProjects();
   const selectedProject = projects.find(
     (project) => project.id === selectedProjectId
   );
-  const todoId = e.currentTarget.querySelector("input").id;
+  const todoId = e.currentTarget.getAttribute("for");
   currentTodoId = todoId;
   const selectedTodo = selectedProject.todos.find((todo) => todo.id === todoId);
 
@@ -266,11 +268,11 @@ projectsContainer.addEventListener("click", (e) => {
   }
 });
 
-todosContainer.addEventListener("click", (e) => {
-  if (e.target.tagName.toLowerCase() === "label") {
-    handleViewTodoDetails(e);
-  }
-});
+// todosContainer.addEventListener("click", (e) => {
+//   if (e.target.tagName.toLowerCase() === "label") {
+//     handleViewTodoDetails(e);
+//   }
+// });
 
 export default {
   todosContainer,

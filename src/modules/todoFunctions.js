@@ -61,7 +61,6 @@ function handleTodoItemCheck(e) {
     e.target.tagName.toLowerCase() === "input" &&
     e.target.type === "checkbox"
   ) {
-    console.log(e.target.tagName.toLowerCase());
     const selectedProjectId = state.getSelectedProjectId();
     const projects = state.getProjects();
     const selectedProject = projects.find(
@@ -117,7 +116,7 @@ function handleDeleteTodoItem(todoId) {
   modal.closeModal("view-todo");
 }
 
-todosContainer.addEventListener("click", handleTodoItemCheck);
+// todosContainer.addEventListener("click", handleTodoItemCheck);
 
 newTodoForm.addEventListener("submit", handleNewTodoSubmit);
 clearCompleteTodosButton.addEventListener("click", handleClearCompleteTodos);
